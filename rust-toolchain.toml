@@ -1,0 +1,12 @@
+[toolchain]
+channel = "1.96.0"
+components = ["rustfmt", "clippy"]
+profile = "default"
+
+# Pinned to the exact stable toolchain verified to build this workspace at
+# bootstrap time (Phase 1 — Milestone 1), consistent with the reproducibility
+# expectations in docs/TOOLCHAIN.md §20. This pin is a starting point, not a
+# permanent commitment to this specific patch version: the project's actual
+# Minimum Supported Rust Version policy is an early Phase 1 decision the
+# Core Maintainers should make deliberately (see docs/adr/ADR-0001-repository-structure.md),
+# not one this bootstrap milestone is authorized to set on the project's behalf.

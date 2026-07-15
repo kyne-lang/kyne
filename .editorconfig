@@ -1,0 +1,20 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+[*.{yml,yaml}]
+indent_size = 2
+
+# Kyne (.kyn) source formatting is governed exclusively by docs/TOOLCHAIN.md §10
+# and tools/formatter, never by this file — no [*.kyn] section is defined here
+# on purpose, so no editor ever silently disagrees with `kyne fmt`.

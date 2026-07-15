@@ -1,0 +1,51 @@
+contract Marketplace {
+    state listings: map<u64, Listing>;
+    state next_id: u64 = 0;
+
+    error MarketError {
+        NotFound,
+        AlreadySold,
+    }
+
+    event Listed(id: u64, seller: address, price: i128);
+    event Sold(id: u64, buyer: address);
+
+    struct Listing {
+        seller: address,
+        price: i128,
+        sold: bool,
+    }
+
+    public fn init() {
+        next_id = 0;
+    }
+
+    public fn list_item(seller: address, price: i128) -> u64 {
+        auth(seller);
+
+        let id = next_id;
+        listings.set(id, Listing { seller, price, sold: false });
+        next_id += 1;
+
+        emit Listed(id, seller, price);
+        return id;
+    }
+
+    public fn buy(buyer: address, id: u64) -> Result<bool, MarketError> {
+        auth(buyer);
+
+        let listing = match listings.get(id) {
+            Some(value) => value,
+            None => throw MarketError::NotFound,
+        };
+
+        if listing.sold {
+            throw MarketError::AlreadySold;
+        }
+
+        listings.set(id, Listing { seller: listing.seller, price: listing.price, sold: true });
+
+        emit Sold(id, buyer);
+        return Ok(true);
+    }
+}

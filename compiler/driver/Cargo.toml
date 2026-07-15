@@ -1,0 +1,23 @@
+[package]
+name = "kyne_driver"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "See README.md in this directory."
+
+[dependencies]
+kyne_lexer = { path = "../lexer" }
+kyne_parser = { path = "../parser" }
+kyne_cst = { path = "../cst" }
+kyne_ast = { path = "../ast" }
+kyne_resolver = { path = "../resolver" }
+kyne_types = { path = "../types" }
+kyne_semantics = { path = "../semantics" }
+kyne_security = { path = "../security" }
+kyne_hir = { path = "../hir" }
+kyne_optimizer = { path = "../optimizer" }
+kyne_rir = { path = "../rir" }
+kyne_codegen = { path = "../codegen" }
+kyne_diagnostics = { path = "../diagnostics" }
+kyne_cache = { path = "../cache" }

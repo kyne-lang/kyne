@@ -1,0 +1,21 @@
+contract Counter {
+    state count: i64 = 0;
+
+    event Incremented(by: address, new_value: i64);
+
+    public fn init() {
+        count = 0;
+    }
+
+    public fn increment(by: address) -> i64 {
+        auth(by);
+
+        count += 1;
+        emit Incremented(by, count);
+        return count;
+    }
+
+    public fn get() -> i64 {
+        return count;
+    }
+}

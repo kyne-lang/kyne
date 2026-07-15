@@ -1,0 +1,14 @@
+# Formatting configuration for Kyne's own Rust implementation (the compiler,
+# standard library, and tooling crates). This has no bearing on Kyne source
+# code formatting, which is governed exclusively by docs/TOOLCHAIN.md §10 and
+# implemented by tools/formatter — never by this file.
+edition = "2021"
+max_width = 100
+use_small_heuristics = "Default"
+
+# imports_granularity and group_imports would express this crate family's
+# import-style preference more precisely, but both are nightly-only as of
+# the pinned stable toolchain in rust-toolchain.toml (see
+# docs/adr/ADR-0001-repository-structure.md) and are deliberately omitted
+# here rather than accepted with a stable-channel warning on every
+# `cargo fmt` invocation.

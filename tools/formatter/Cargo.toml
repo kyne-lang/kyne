@@ -1,0 +1,12 @@
+[package]
+name = "kyne_formatter"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "See README.md in this directory."
+
+[dependencies]
+kyne_lexer = { path = "../../compiler/lexer" }
+kyne_parser = { path = "../../compiler/parser" }
+kyne_cst = { path = "../../compiler/cst" }

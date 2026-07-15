@@ -1,0 +1,11 @@
+[package]
+name = "kyne_parser"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "See README.md in this directory."
+
+[dependencies]
+kyne_lexer = { path = "../lexer" }
+kyne_diagnostics = { path = "../diagnostics" }

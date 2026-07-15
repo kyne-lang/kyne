@@ -1,0 +1,7 @@
+# Clippy configuration for Kyne's own Rust implementation.
+# Deliberately minimal at bootstrap: no lint thresholds are set here that the
+# project has not yet had reason to tune. Workspace-wide lint *levels* (as
+# opposed to Clippy's own configurable thresholds) are declared in the root
+# Cargo.toml's [workspace.lints] table instead, per modern Cargo convention.
+
+msrv = "1.75"

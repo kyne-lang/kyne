@@ -1,0 +1,11 @@
+[package]
+name = "kyne_types"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "See README.md in this directory."
+
+[dependencies]
+kyne_resolver = { path = "../resolver" }
+kyne_diagnostics = { path = "../diagnostics" }

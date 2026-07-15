@@ -1,0 +1,20 @@
+# Rust build artifacts — regenerated in full by `cargo build`, never checked in.
+/target/
+**/target/
+
+# The Kyne compiler's own cache and build output, once a `kyne` binary exists
+# to produce them (docs/COMPILER_ARCHITECTURE.md §17, docs/TOOLCHAIN.md §4/§14).
+.kyn/
+build/
+
+# Editor and OS artifacts.
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Local environment overrides — never committed, per docs/TOOLCHAIN.md's
+# "no hidden configuration" toolchain commandment.
+.env
+.env.local

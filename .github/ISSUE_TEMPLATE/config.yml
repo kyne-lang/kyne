@@ -1,0 +1,7 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability report (private)
+    url: https://github.com/kyne-lang/kyne/security/advisories/new
+    about: >-
+      Report a suspected security vulnerability privately, per
+      GOVERNANCE.md §11. Do not open a public issue for a vulnerability report.

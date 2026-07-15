@@ -1,0 +1,74 @@
+contract Voting {
+    state admin: address;
+    state proposals: map<u64, Proposal>;
+    state voted: map<address, bool>;
+    state next_id: u64 = 0;
+
+    error VoteError {
+        AlreadyVoted,
+        NotFound,
+        Unauthorized,
+    }
+
+    event ProposalCreated(id: u64, description: string);
+    event Voted(id: u64, voter: address, approve: bool);
+
+    struct Proposal {
+        description: string,
+        yes_votes: u64,
+        no_votes: u64,
+    }
+
+    public fn init(admin_addr: address) {
+        auth(admin_addr);
+        admin = admin_addr;
+    }
+
+    public fn create_proposal(caller: address, description: string) -> Result<u64, VoteError> {
+        auth(caller);
+
+        if caller != admin {
+            throw VoteError::Unauthorized;
+        }
+
+        let id = next_id;
+        proposals.set(id, Proposal { description, yes_votes: 0, no_votes: 0 });
+        next_id += 1;
+
+        emit ProposalCreated(id, description);
+        return Ok(id);
+    }
+
+    public fn vote(voter: address, id: u64, approve: bool) -> Result<bool, VoteError> {
+        auth(voter);
+
+        if voted.has(voter) {
+            throw VoteError::AlreadyVoted;
+        }
+
+        let proposal = match proposals.get(id) {
+            Some(value) => value,
+            None => throw VoteError::NotFound,
+        };
+
+        let updated = if approve {
+            Proposal {
+                description: proposal.description,
+                yes_votes: proposal.yes_votes + 1,
+                no_votes: proposal.no_votes,
+            }
+        } else {
+            Proposal {
+                description: proposal.description,
+                yes_votes: proposal.yes_votes,
+                no_votes: proposal.no_votes + 1,
+            }
+        };
+
+        proposals.set(id, updated);
+        voted.set(voter, true);
+
+        emit Voted(id, voter, approve);
+        return Ok(true);
+    }
+}

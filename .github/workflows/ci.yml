@@ -1,0 +1,62 @@
+name: CI
+
+# Verifies formatting, workspace compilation, and lint cleanliness only.
+# Per Phase 1 - Milestone 1's scope (docs/ROADMAP.md), this workspace does
+# not yet build a deployable artifact of any kind, so this workflow does
+# not attempt deployment, publishing, or release automation - see
+# docs/GOVERNANCE.md §9 and docs/TOOLCHAIN.md §14 for the eventual release
+# process this CI configuration deliberately does not implement yet.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  format:
+    name: Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        run: rustup show
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+  build:
+    name: Workspace compilation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        run: rustup show
+      - name: Build workspace
+        run: cargo build --workspace --all-targets
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        run: rustup show
+      - name: Run Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+  doc-links:
+    name: Documentation links
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Markdown links
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: >-
+            --no-progress
+            --exclude-mail
+            './**/*.md'

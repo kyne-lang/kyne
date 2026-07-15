@@ -1,0 +1,67 @@
+[workspace]
+resolver = "2"
+members = [
+    # Compiler — see ARCHITECTURE.md §4 and docs/COMPILER_ARCHITECTURE.md §20/§22.
+    "compiler/cli",
+    "compiler/driver",
+    "compiler/lexer",
+    "compiler/parser",
+    "compiler/cst",
+    "compiler/ast",
+    "compiler/resolver",
+    "compiler/types",
+    "compiler/semantics",
+    "compiler/hir",
+    "compiler/rir",
+    "compiler/codegen",
+    "compiler/security",
+    "compiler/optimizer",
+    "compiler/cache",
+    "compiler/diagnostics",
+
+    # Tooling — see ARCHITECTURE.md §5.
+    "tools/formatter",
+    "tools/lsp",
+    "tools/docgen",
+    "tools/test_runner",
+    "tools/playground",
+
+    # Standard library — see ARCHITECTURE.md §6 and docs/STANDARD_LIBRARY.md §2.
+    "stdlib/core",
+    "stdlib/storage",
+    "stdlib/crypto",
+    "stdlib/collections",
+    "stdlib/math",
+    "stdlib/ledger",
+    "stdlib/events",
+    "stdlib/auth",
+    "stdlib/convert",
+    "stdlib/time",
+    "stdlib/debug",
+    "stdlib/test",
+]
+
+# No crate outside this workspace's `members` list is part of the Kyne build,
+# per ARCHITECTURE.md's "no crates outside the workspace" rule.
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/kyne-lang/kyne"
+rust-version = "1.75"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+# Kyne itself achieves memory safety through non-expressibility rather than
+# verification (docs/MEMORY_MODEL.md §14). The compiler that implements Kyne
+# is not required to be unsafe-free by any constitutional document, but this
+# workspace forbids `unsafe` by default while the compiler is small enough
+# that no crate has yet demonstrated a real need for it; a crate that finds
+# it does should override this lint deliberately, in review, not by accident.
+
+[profile.dev]
+opt-level = 0
+
+[profile.release]
+opt-level = 3

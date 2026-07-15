@@ -1,0 +1,40 @@
+contract Escrow {
+    state buyer: address;
+    state seller: address;
+    state arbiter: address;
+    state amount: i128;
+    state released: bool = false;
+
+    error EscrowError {
+        AlreadyReleased,
+        Unauthorized,
+    }
+
+    event Released(to: address, amount: i128);
+
+    public fn init(buyer_addr: address, seller_addr: address, arbiter_addr: address, deposit: i128) {
+        auth(buyer_addr);
+
+        buyer = buyer_addr;
+        seller = seller_addr;
+        arbiter = arbiter_addr;
+        amount = deposit;
+        released = false;
+    }
+
+    public fn release(caller: address) -> Result<bool, EscrowError> {
+        if released {
+            throw EscrowError::AlreadyReleased;
+        }
+
+        if caller != arbiter && caller != buyer {
+            throw EscrowError::Unauthorized;
+        }
+
+        auth(caller);
+
+        released = true;
+        emit Released(seller, amount);
+        return Ok(true);
+    }
+}

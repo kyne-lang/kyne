@@ -1,0 +1,12 @@
+[package]
+name = "kyne_playground"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "See README.md in this directory."
+
+[dependencies]
+kyne_driver = { path = "../../compiler/driver" }
+kyne_formatter = { path = "../formatter" }
+kyne_cache = { path = "../../compiler/cache" }

@@ -1,0 +1,113 @@
+contract MultisigWallet {
+    state owners: list<address>;
+    state threshold: u32;
+    state transactions: map<u64, Transaction>;
+    state approvals_index: map<u64, map<address, bool>>;
+    state next_id: u64 = 0;
+
+    error WalletError {
+        NotOwner,
+        NotFound,
+        AlreadyApproved,
+        AlreadyExecuted,
+        ThresholdNotMet,
+    }
+
+    event Submitted(id: u64, to: address, amount: i128);
+    event Approved(id: u64, owner: address, total_approvals: u32);
+    event Executed(id: u64, to: address, amount: i128);
+
+    struct Transaction {
+        to: address,
+        amount: i128,
+        approvals: u32,
+        executed: bool,
+    }
+
+    public fn init(initial_owners: list<address>, required: u32) {
+        owners = initial_owners;
+        threshold = required;
+    }
+
+    public fn submit(caller: address, to: address, amount: i128) -> Result<u64, WalletError> {
+        auth(caller);
+        require_owner(caller)?;
+
+        let id = next_id;
+        transactions.set(id, Transaction { to, amount, approvals: 0, executed: false });
+        next_id += 1;
+
+        emit Submitted(id, to, amount);
+        return Ok(id);
+    }
+
+    public fn approve(caller: address, id: u64) -> Result<bool, WalletError> {
+        auth(caller);
+        require_owner(caller)?;
+
+        let tx = match transactions.get(id) {
+            Some(value) => value,
+            None => throw WalletError::NotFound,
+        };
+
+        if tx.executed {
+            throw WalletError::AlreadyExecuted;
+        }
+
+        let signers = approvals_index.get(id).unwrap_or({});
+        if signers.has(caller) {
+            throw WalletError::AlreadyApproved;
+        }
+
+        signers.set(caller, true);
+        approvals_index.set(id, signers);
+
+        let updated = Transaction {
+            to: tx.to,
+            amount: tx.amount,
+            approvals: tx.approvals + 1,
+            executed: tx.executed,
+        };
+        transactions.set(id, updated);
+
+        emit Approved(id, caller, updated.approvals);
+        return Ok(true);
+    }
+
+    public fn execute(caller: address, id: u64) -> Result<bool, WalletError> {
+        auth(caller);
+        require_owner(caller)?;
+
+        let tx = match transactions.get(id) {
+            Some(value) => value,
+            None => throw WalletError::NotFound,
+        };
+
+        if tx.executed {
+            throw WalletError::AlreadyExecuted;
+        }
+
+        if tx.approvals < threshold {
+            throw WalletError::ThresholdNotMet;
+        }
+
+        transactions.set(id, Transaction {
+            to: tx.to,
+            amount: tx.amount,
+            approvals: tx.approvals,
+            executed: true,
+        });
+
+        emit Executed(id, tx.to, tx.amount);
+        return Ok(true);
+    }
+
+    internal fn require_owner(caller: address) -> Result<bool, WalletError> {
+        for owner in owners {
+            if owner == caller {
+                return Ok(true);
+            }
+        }
+        throw WalletError::NotOwner;
+    }
+}

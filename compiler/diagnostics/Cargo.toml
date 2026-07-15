@@ -1,0 +1,9 @@
+[package]
+name = "kyne_diagnostics"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "See README.md in this directory."
+
+[dependencies]

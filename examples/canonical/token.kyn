@@ -1,0 +1,58 @@
+contract Token {
+    state total_supply: i128 = 0;
+    state balances: map<address, i128>;
+
+    const NAME: string = "Kyne Example Token";
+    const SYMBOL: string = "KYN";
+    const DECIMALS: u32 = 7;
+
+    error TokenError {
+        InsufficientBalance,
+        InvalidAmount,
+    }
+
+    event Transfer(from: address, to: address, amount: i128);
+    event Mint(to: address, amount: i128);
+
+    public fn init(admin: address) {
+        auth(admin);
+        total_supply = 0;
+    }
+
+    public fn mint(admin: address, to: address, amount: i128) -> Result<bool, TokenError> {
+        if amount <= 0 {
+            throw TokenError::InvalidAmount;
+        }
+
+        auth(admin);
+
+        balances.set(to, balance_of(to) + amount);
+        total_supply += amount;
+
+        emit Mint(to, amount);
+        return Ok(true);
+    }
+
+    public fn transfer(from: address, to: address, amount: i128) -> Result<bool, TokenError> {
+        if amount <= 0 {
+            throw TokenError::InvalidAmount;
+        }
+
+        auth(from);
+
+        let from_balance = balance_of(from);
+        if from_balance < amount {
+            throw TokenError::InsufficientBalance;
+        }
+
+        balances.set(from, from_balance - amount);
+        balances.set(to, balance_of(to) + amount);
+
+        emit Transfer(from, to, amount);
+        return Ok(true);
+    }
+
+    public fn balance_of(account: address) -> i128 {
+        return balances.get(account).unwrap_or(0);
+    }
+}
