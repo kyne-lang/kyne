@@ -134,4 +134,4 @@ issue for a suspected vulnerability.
 
 ## License
 
-[MIT](./LICENSE).
+[Apache License 2.0](./LICENSE).
