@@ -261,7 +261,7 @@ with the `kyne` CLI's basic subcommand scaffolding (per [TOOLCHAIN.md §9](./TOO
 
 | Document | Priority | When needed |
 |---|---|---|
-| `CONTRIBUTING.md` | Highest | Phase 1, immediately — contributors need this from the first public commit, per [GOVERNANCE.md §3](./GOVERNANCE.md#3-governance-structure)'s role definitions requiring somewhere to explain how to begin. |
+| [`CONTRIBUTING.md`](../CONTRIBUTING.md) | Done | Written early in Phase 1, per [GOVERNANCE.md §3](./GOVERNANCE.md#3-governance-structure)'s role definitions requiring somewhere to explain how to begin. |
 | Informal architecture guides (supplementing [COMPILER_ARCHITECTURE.md](./COMPILER_ARCHITECTURE.md)) | High | Phase 1–2, growing alongside the compiler itself. |
 | Tutorials and examples | High | Phase 1 onward, growing through Phase 3 per [TOOLCHAIN.md §6](./TOOLCHAIN.md#6-project-templates)'s template system. |
 | API documentation | High | Automatic and continuous, per [TOOLCHAIN.md §12](./TOOLCHAIN.md#12-documentation-generator) — this is generated, not separately authored, so its "roadmap" is simply `kyne doc` existing and being run in CI. |
@@ -269,7 +269,7 @@ with the `kyne` CLI's basic subcommand scaffolding (per [TOOLCHAIN.md §9](./TOO
 | `ECOSYSTEM.md` | Medium | Needed once Phase 4 begins, per [GOVERNANCE.md §18](./GOVERNANCE.md#18-ecosystem-governance). |
 | Migration guides | Reactive, not scheduled | Needed only when a breaking edition change is actually proposed, per [GOVERNANCE.md §10](./GOVERNANCE.md#10-compatibility-policy) — there is nothing to migrate from until then. |
 
-**Priorities.** `CONTRIBUTING.md` is the single highest-priority remaining document, since every other item in this table depends on a contributor base that document exists to grow.
+**Priorities.** With `CONTRIBUTING.md` complete, the informal architecture guides and tutorials/examples rows above are the next-highest-priority remaining documents, since every later item in this table depends on a contributor base those two continue to grow.
 
 ---
 
@@ -605,7 +605,7 @@ This document is informed by, and MUST remain consistent with:
 - [TOOLCHAIN.md](./TOOLCHAIN.md) — the developer experience Phase 3 completes.
 - [GOVERNANCE.md](./GOVERNANCE.md) — the process governing every KIP this roadmap's implementation work will eventually require, and the constitutional protection this document itself is explicitly excluded from, per this document's own front matter.
 
-The following documents are anticipated but not yet written, and this document's [Non-Goals](#non-goals) section reserves their scope explicitly: `CONTRIBUTING.md`, `PACKAGE_MANAGER.md`, `ECOSYSTEM.md`, and `RELEASE_PROCESS.md`. Until each exists, this document does not speculate on their contents beyond the scope boundary already stated above.
+[`CONTRIBUTING.md`](../CONTRIBUTING.md) now exists. The following documents remain anticipated but not yet written, and this document's [Non-Goals](#non-goals) section reserves their scope explicitly: `PACKAGE_MANAGER.md`, `ECOSYSTEM.md`, and `RELEASE_PROCESS.md`. Until each exists, this document does not speculate on their contents beyond the scope boundary already stated above.
 
 ---
 
