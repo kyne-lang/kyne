@@ -2,7 +2,7 @@
 name: KIP proposal
 about: Propose a change to language, runtime, compiler architecture, memory model, standard library, toolchain, or governance behavior
 title: "[KIP] "
-labels: kip
+labels: KIP
 ---
 
 Before filing, read
