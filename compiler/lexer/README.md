@@ -16,8 +16,22 @@ tokens carrying kind, literal text, and exact source span.
 None. `kyne_lexer` is the first stage of the pipeline and depends on no
 other crate in this workspace.
 
+## Status
+
+Implemented. `Lexer` (`src/lexer.rs`) hand-scans `.kyn` source into a flat
+`Vec<Token>` (`src/token.rs`), with keyword and reserved-word recognition
+in `src/keyword.rs`. Malformed input never aborts the pass: an invalid or
+incomplete lexeme becomes a single `TokenKind::Error` token and scanning
+resumes immediately after it.
+
+Covered by unit tests for every token category (keywords, reserved words,
+identifiers, integer and string literals, comments, punctuation,
+whitespace, spans) including malformed-input recovery, plus integration
+tests (`tests/canonical_examples.rs`) confirming all six canonical
+examples under `examples/canonical/` tokenize with zero `Error` tokens.
+
 ## Future work
 
-Implementation begins in Phase 1 — Milestone 2, per
-[`ROADMAP.md` §7](../../docs/ROADMAP.md#7-compiler-bootstrap-order). No code
-exists in this crate yet — see `src/lib.rs`.
+Downstream crates (`kyne_cst`, `kyne_parser`) will consume this crate's
+token stream, per
+[`COMPILER_ARCHITECTURE.md` §3](../../docs/COMPILER_ARCHITECTURE.md#3-compiler-pipeline).
