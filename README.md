@@ -115,18 +115,9 @@ Full detail, including release gates and no-guessing sequencing: [`ROADMAP.md`](
 
 ## Contributing
 
-`CONTRIBUTING.md` does not exist yet — it is the single highest-priority
-remaining document, per [`ROADMAP.md` §12](./docs/ROADMAP.md#12-documentation-roadmap),
-scheduled for early Phase 1. Until it exists:
-
-1. Read [`ARCHITECTURE.md`](./ARCHITECTURE.md) first.
-2. Read [`GOVERNANCE.md`](./docs/GOVERNANCE.md) to understand how a
-   change becomes part of Kyne — in particular, the distinction between a
-   [KIP](./docs/kip/README.md) (changes what Kyne is) and an
-   [ADR](./docs/adr/README.md) (changes how it's implemented).
-3. Every crate's own `README.md` states its purpose, responsibilities,
-   dependencies, and current status — start there before writing code in
-   it.
+See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for how to get set up, where to
+work, the KIP-versus-ADR distinction, and what a pull request is expected
+to include.
 
 Security vulnerabilities should be reported privately — see
 [`.github/SECURITY.md`](./.github/SECURITY.md). Do not open a public

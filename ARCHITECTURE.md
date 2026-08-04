@@ -543,7 +543,7 @@ This document is informed by, and MUST remain consistent with:
 - [FOUNDATION.md](docs/FOUNDATION.md), [LANGUAGE_PRINCIPLES.md](docs/LANGUAGE_PRINCIPLES.md), [LANGUAGE_SPEC.md](docs/LANGUAGE_SPEC.md), [RUNTIME_MODEL.md](docs/RUNTIME_MODEL.md), [COMPILER_ARCHITECTURE.md](docs/COMPILER_ARCHITECTURE.md), [MEMORY_MODEL.md](docs/MEMORY_MODEL.md), [STANDARD_LIBRARY.md](docs/STANDARD_LIBRARY.md), [TOOLCHAIN.md](docs/TOOLCHAIN.md), [GOVERNANCE.md](docs/GOVERNANCE.md) — the nine constitutional documents this document implements the repository organization for, and never contradicts.
 - [ROADMAP.md](docs/ROADMAP.md) — the companion operational document sequencing *when* this document's crates and directories come into being.
 
-The following documents are anticipated but not yet written, and this document's [Non-Goals](#non-goals) section reserves their scope explicitly: `CONTRIBUTING.md`, `PACKAGE_MANAGER.md`, `ECOSYSTEM.md`, and `RELEASE_PROCESS.md`. Until each exists, this document does not speculate on their contents beyond the scope boundary already stated above.
+[`CONTRIBUTING.md`](CONTRIBUTING.md), at the repository root, now exists — see that document directly for contributor workflow guidance. The following documents remain anticipated but not yet written, and this document's [Non-Goals](#non-goals) section reserves their scope explicitly: `PACKAGE_MANAGER.md`, `ECOSYSTEM.md`, and `RELEASE_PROCESS.md`. Until each exists, this document does not speculate on their contents beyond the scope boundary already stated above.
 
 ---
 
