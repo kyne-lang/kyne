@@ -50,7 +50,12 @@ jobs:
   doc-links:
     name: Documentation links
     runs-on: ubuntu-latest
-    continue-on-error: true
+    # `continue-on-error` was removed after this job ran cleanly on three
+    # independent pull requests (#21, #22, #23) with no failures - see the
+    # pull request that made this change (issue #5) for the verification
+    # record. If this job becomes flaky (external link rot, rate limiting),
+    # reintroduce it deliberately rather than assuming this removal was a
+    # mistake.
     steps:
       - uses: actions/checkout@v4
       - name: Check Markdown links
