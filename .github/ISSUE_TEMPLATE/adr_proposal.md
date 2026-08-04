@@ -2,7 +2,7 @@
 name: ADR proposal
 about: Propose an implementation decision that does not change any constitutional document
 title: "[ADR] "
-labels: adr
+labels: ADR
 ---
 
 Before filing, read [`docs/adr/README.md`](../../docs/adr/README.md) and
