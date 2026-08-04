@@ -41,3 +41,4 @@ directly; it does not redefine either document.
 | [ADR-0001](./ADR-0001-repository-structure.md) | Repository Structure | Accepted |
 | [ADR-0002](./ADR-0002-foundation-md-location.md) | FOUNDATION.md Location Correction | Accepted |
 | [ADR-0003](./ADR-0003-license-apache-2.0.md) | License Finalized as Apache License 2.0 | Accepted |
+| [ADR-0004](./ADR-0004-msrv-policy.md) | Minimum Supported Rust Version (MSRV) Policy | Accepted |

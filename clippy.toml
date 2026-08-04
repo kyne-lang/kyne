@@ -3,5 +3,9 @@
 # project has not yet had reason to tune. Workspace-wide lint *levels* (as
 # opposed to Clippy's own configurable thresholds) are declared in the root
 # Cargo.toml's [workspace.lints] table instead, per modern Cargo convention.
+#
+# MSRV policy: see docs/adr/ADR-0004-msrv-policy.md. Must match
+# Cargo.toml's workspace.package.rust-version and rust-toolchain.toml's
+# pinned channel exactly.
 
-msrv = "1.75"
+msrv = "1.96"
