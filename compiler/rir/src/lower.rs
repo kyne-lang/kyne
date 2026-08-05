@@ -271,8 +271,37 @@ fn lower_stmt(stmt: &HStmt, ctx: &Ctx) -> RStmt {
             condition: lower_expr(condition, ctx),
             body: lower_block(body, ctx),
         },
-        HStmt::Expr(e) => RStmt::Expr(lower_expr(e, ctx)),
+        HStmt::Expr(e) => lower_expr_stmt(e, ctx),
     }
+}
+
+/// A mutating `list<T>`/`map<K, V>` method (`push`/`remove`/`set`,
+/// per LANGUAGE_SPEC.md §6.2.1/§6.2.2 - each returns `unit`, so calling
+/// one is only ever meaningful as a statement) called directly on a
+/// `state` field is expanded into [`RStmt::StorageMutate`]'s explicit
+/// read-mutate-write-back form here, mirroring `lower_assign`'s
+/// compound-assignment expansion - see [`RStmt::StorageMutate`]'s own
+/// doc comment for why a bare `MethodCall` on a storage read would
+/// silently discard the mutation. Any other expression statement passes
+/// through unchanged.
+fn lower_expr_stmt(expr: &HExpr, ctx: &Ctx) -> RStmt {
+    if let HExpr::MethodCall { base, method, args } = expr {
+        if let HExpr::Path(Path::Ident(name)) = base.as_ref() {
+            if ctx.state_names.contains(name) && is_mutating_collection_method(method) {
+                return RStmt::StorageMutate {
+                    key: name.clone(),
+                    default: ctx.state_defaults.get(name).cloned().map(Box::new),
+                    method: method.clone(),
+                    args: args.iter().map(|a| lower_expr(a, ctx)).collect(),
+                };
+            }
+        }
+    }
+    RStmt::Expr(lower_expr(expr, ctx))
+}
+
+fn is_mutating_collection_method(method: &str) -> bool {
+    matches!(method, "push" | "remove" | "set")
 }
 
 /// A state-field assignment target has no Rust place to apply `+=`/etc.

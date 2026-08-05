@@ -162,6 +162,37 @@ fn token_balances_get_calls_carry_an_empty_map_default() {
     assert!(matches!(default.as_deref(), Some(RExpr::MapLiteral(items)) if items.is_empty()));
 }
 
+/// `balances.set(to, ...)` in `mint` (a mutating `map<K, V>` method
+/// called directly on a `state` field) must lower to
+/// `RStmt::StorageMutate`, not a bare `MethodCall` on a storage read -
+/// the latter would silently discard the mutation, since a
+/// `soroban_sdk::Map`'s mutating methods mutate only their local
+/// handle, never the storage entry it was read from.
+#[test]
+fn token_balances_set_becomes_storage_mutate() {
+    let rir = lower_source(
+        "token.kyn",
+        include_str!("../../../examples/canonical/token.kyn"),
+    );
+    let mint = rir
+        .contract
+        .functions
+        .iter()
+        .find(|f| f.name == "mint")
+        .expect("expected a `mint` function");
+    let storage_mutate = mint.body.statements.iter().find(|s| {
+        matches!(
+            s,
+            RStmt::StorageMutate { key, method, .. } if key == "balances" && method == "set"
+        )
+    });
+    assert!(
+        storage_mutate.is_some(),
+        "expected `balances.set(...)` to lower to RStmt::StorageMutate, got: {:?}",
+        mint.body.statements
+    );
+}
+
 fn find_storage_get<'a>(block: &'a kyne_rir::RBlock, key: &str) -> Option<&'a RExpr> {
     fn search_expr<'a>(expr: &'a RExpr, key: &str) -> Option<&'a RExpr> {
         if let RExpr::StorageGet { key: k, .. } = expr {

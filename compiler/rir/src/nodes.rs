@@ -180,6 +180,24 @@ pub enum RStmt {
         key: String,
         value: RExpr,
     },
+    /// A mutating `list<T>`/`map<K, V>` collection method (`push`,
+    /// `remove`, `set`) called directly on a `state` field
+    /// (`balances.set(to, amount);`), realized as an explicit read into
+    /// a mutable temporary, the mutating call itself, then an explicit
+    /// storage write-back - `state` has no Rust-level mutable place a
+    /// native `&mut self` method could apply to directly, and calling
+    /// the method on a bare storage read (with no write-back) would
+    /// silently discard the mutation, since `soroban_sdk::Map`/`Vec`
+    /// mutating methods mutate only their local handle, never the
+    /// storage entry it was read from. `default` is the field's own
+    /// implicit-empty-collection default (per ADR-0009), used the same
+    /// way [`RExpr::StorageGet`]'s `default` is.
+    StorageMutate {
+        key: String,
+        default: Option<Box<RExpr>>,
+        method: String,
+        args: Vec<RExpr>,
+    },
     /// `addr.require_auth();` - the direct realization of `auth(addr)`,
     /// per LANGUAGE_SPEC.md §10.1.
     RequireAuth(RExpr),

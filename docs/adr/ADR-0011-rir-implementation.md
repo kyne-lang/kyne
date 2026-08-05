@@ -76,6 +76,27 @@ Rust binding), so `src/lower.rs`'s `lower_assign` always expands a
 compound assignment into an explicit read-modify-write:
 `RStmt::StorageSet { key: "count", value: <StorageGet count> + 1 }`.
 
+**A mutating collection method called directly on a `state` field is
+expanded into an explicit read-mutate-write-back, not a bare
+`MethodCall`.** `balances.set(to, amount)` (§6.2.2) - like `list<T>`'s
+`push`/`remove` and `map<K, V>`'s `set`/`remove`, each specified to
+return `unit` - mutates only the local handle it is called on;
+`soroban_sdk::Map`/`Vec` values do not write themselves back to
+storage as a side effect of a mutating call. Printing this call
+directly on an `RExpr::StorageGet` (as an ordinary `MethodCall`, the
+same way a read-only method like `.get()`/`.len()`/`.has()` is
+printed) would therefore silently discard the mutation: the generated
+Rust would compile, mutate a temporary nobody reads, and never persist
+anything. `src/lower.rs`'s `lower_expr_stmt` instead recognizes this
+shape at statement level and lowers it to `RStmt::StorageMutate{key,
+default, method, args}`, which `kyne_codegen` is expected to realize
+as three explicit Rust statements: read the field into a `mut` local
+(with the same `.unwrap_or(default)` fallback `StorageGet` uses), call
+the mutating method on that local, then write the local back to
+storage under the same key - mirroring how compound `state` assignment
+is already expanded into an explicit read-modify-write rather than
+printed as a native Rust `+=`.
+
 **Implicit collection defaults are inherited and realized here.**
 [ADR-0009](./ADR-0009-semantics-implementation.md) established that a
 `list<T>`/`map<K, V>` `state` field with no literal initializer has an
@@ -95,4 +116,5 @@ never observably reads as unset.
 - `kyne_codegen` (issue #17) owns exactly two things this crate
   deliberately leaves undone: prepending `env: Env` to every function
   signature, and choosing the literal Rust syntax (`env.storage()...`)
-  that realizes `RExpr::StorageGet`/`RStmt::StorageSet`/`RStmt::RequireAuth`.
+  that realizes `RExpr::StorageGet`/`RStmt::StorageSet`/
+  `RStmt::StorageMutate`/`RStmt::RequireAuth`.
