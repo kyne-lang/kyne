@@ -1,0 +1,121 @@
+#![no_std]
+
+use soroban_sdk::{contract, contracterror, contractimpl, Address, Env, Map, Symbol};
+
+pub const NAME: &str = "Kyne Example Token";
+pub const SYMBOL: &str = "KYN";
+pub const DECIMALS: u32 = 7;
+
+#[contract]
+pub struct Token;
+
+#[contracterror]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+#[repr(u32)]
+pub enum TokenError {
+    InsufficientBalance = 1,
+    InvalidAmount = 2,
+}
+
+#[contractimpl]
+impl Token {
+    pub fn init(env: Env, admin: Address) {
+        admin.clone().require_auth();
+        env.storage()
+            .persistent()
+            .set(&Symbol::new(&env, "total_supply"), &(0));
+    }
+
+    pub fn mint(env: Env, admin: Address, to: Address, amount: i128) -> Result<bool, TokenError> {
+        if amount <= 0 {
+            return Err(TokenError::InvalidAmount);
+        }
+        admin.clone().require_auth();
+        let mut balances = env
+            .storage()
+            .persistent()
+            .get::<Symbol, Map<Address, i128>>(&Symbol::new(&env, "balances"))
+            .unwrap_or(Map::new(&env));
+        balances.set(
+            to.clone(),
+            (Self::balance_of(env.clone(), to.clone()))
+                .checked_add(amount)
+                .expect("arithmetic overflow"),
+        );
+        env.storage()
+            .persistent()
+            .set(&Symbol::new(&env, "balances"), &balances);
+        env.storage().persistent().set(
+            &Symbol::new(&env, "total_supply"),
+            &((env
+                .storage()
+                .persistent()
+                .get::<Symbol, i128>(&Symbol::new(&env, "total_supply"))
+                .unwrap_or(0))
+            .checked_add(amount)
+            .expect("arithmetic overflow")),
+        );
+        env.events()
+            .publish((Symbol::new(&env, "Mint"),), (to.clone(), amount));
+        return Ok(true);
+    }
+
+    pub fn transfer(
+        env: Env,
+        from: Address,
+        to: Address,
+        amount: i128,
+    ) -> Result<bool, TokenError> {
+        if amount <= 0 {
+            return Err(TokenError::InvalidAmount);
+        }
+        from.clone().require_auth();
+        let from_balance = Self::balance_of(env.clone(), from.clone());
+        if from_balance.clone() < amount {
+            return Err(TokenError::InsufficientBalance);
+        }
+        let mut balances = env
+            .storage()
+            .persistent()
+            .get::<Symbol, Map<Address, i128>>(&Symbol::new(&env, "balances"))
+            .unwrap_or(Map::new(&env));
+        balances.set(
+            from.clone(),
+            (from_balance.clone())
+                .checked_sub(amount)
+                .expect("arithmetic overflow"),
+        );
+        env.storage()
+            .persistent()
+            .set(&Symbol::new(&env, "balances"), &balances);
+        let mut balances = env
+            .storage()
+            .persistent()
+            .get::<Symbol, Map<Address, i128>>(&Symbol::new(&env, "balances"))
+            .unwrap_or(Map::new(&env));
+        balances.set(
+            to.clone(),
+            (Self::balance_of(env.clone(), to.clone()))
+                .checked_add(amount)
+                .expect("arithmetic overflow"),
+        );
+        env.storage()
+            .persistent()
+            .set(&Symbol::new(&env, "balances"), &balances);
+        env.events().publish(
+            (Symbol::new(&env, "Transfer"),),
+            (from.clone(), to.clone(), amount),
+        );
+        return Ok(true);
+    }
+
+    pub fn balance_of(env: Env, account: Address) -> i128 {
+        return env
+            .storage()
+            .persistent()
+            .get::<Symbol, Map<Address, i128>>(&Symbol::new(&env, "balances"))
+            .unwrap_or(Map::new(&env))
+            .get(account.clone())
+            .unwrap_or(0);
+    }
+}

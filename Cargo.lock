@@ -24,7 +24,12 @@ dependencies = [
 name = "kyne_codegen"
 version = "0.1.0"
 dependencies = [
+ "kyne_ast",
+ "kyne_cst",
+ "kyne_hir",
+ "kyne_resolver",
  "kyne_rir",
+ "kyne_types",
 ]
 
 [[package]]
