@@ -45,3 +45,4 @@ directly; it does not redefine either document.
 | [ADR-0005](./ADR-0005-parser-implementation.md) | Parser Implementation Technique and Syntax-Error Code Range | Accepted |
 | [ADR-0007](./ADR-0007-resolver-implementation.md) | Resolver Diagnostic Code Range and Two Scope Limitations | Accepted |
 | [ADR-0008](./ADR-0008-types-implementation.md) | Type Checker Diagnostic Codes and Block-Value Ambiguity Workaround | Accepted |
+| [ADR-0009](./ADR-0009-semantics-implementation.md) | Implicit Collection Defaults and Ordering-Diagnostic Baseline | Accepted |
