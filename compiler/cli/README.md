@@ -12,10 +12,29 @@ capability is accessed, per [`TOOLCHAIN.md` §3](../../docs/TOOLCHAIN.md#3-cli-p
 
 ## Dependencies
 
-- `kyne_driver`.
+- `kyne_driver` — `check`.
+- `kyne_formatter` — `fmt`.
+- `kyne_diagnostics` — rendering diagnostics from both.
+
+## Status
+
+Implemented: `new`, `init`, `fmt`, and `check` — the four commands the
+v0.1 release gate requires ("Basic CLI operational", per
+[`ROADMAP.md` §25](../../docs/ROADMAP.md#25-release-gates)).
+`src/scaffold.rs` owns project generation (pure filesystem work, no
+compiler crate involved, per `TOOLCHAIN.md` §9's `new`/`init` entries);
+`src/main.rs` is argument parsing and dispatch only. `new`/`init` support
+four templates (`hello`, `token`, `nft`, `oracle`); `hello`/`token` are
+the Counter/Token canonical examples verbatim, per
+[`TOOLCHAIN.md` §6](../../docs/TOOLCHAIN.md#6-project-templates).
+
+Every other subcommand in `TOOLCHAIN.md` §9 (`build`, `run`, `test`,
+`lint`, `doc`, ...) depends on a compiler stage that doesn't exist yet
+and is out of scope for this issue.
 
 ## Future work
 
-**No subcommand is implemented yet** — `src/main.rs` intentionally does
-nothing beyond compiling, per this milestone's scope. Subcommand dispatch
-begins in Phase 1 — Milestone 2, per [`ROADMAP.md` §4](../../docs/ROADMAP.md#4-project-phases).
+Each remaining subcommand lands once its underlying stage does:
+`build`/`run`/`test` need the full pipeline through `kyne_codegen` and
+the external Cargo/Soroban toolchains; `lint` needs `kyne_security`;
+`doc` needs `kyne_docgen`.
