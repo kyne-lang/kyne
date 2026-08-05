@@ -216,6 +216,8 @@ dependencies = [
 name = "kyne_types"
 version = "0.1.0"
 dependencies = [
+ "kyne_ast",
+ "kyne_cst",
  "kyne_diagnostics",
  "kyne_resolver",
 ]
