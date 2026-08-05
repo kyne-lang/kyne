@@ -7,5 +7,9 @@ repository.workspace = true
 description = "See README.md in this directory."
 
 [dependencies]
+kyne_ast = { path = "../ast" }
 kyne_resolver = { path = "../resolver" }
 kyne_diagnostics = { path = "../diagnostics" }
+
+[dev-dependencies]
+kyne_cst = { path = "../cst" }
