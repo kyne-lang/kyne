@@ -1,0 +1,49 @@
+contract Nft {
+    state owners: map<u64, address>;
+    state next_id: u64 = 0;
+
+    error NftError {
+        NotFound,
+        NotOwner,
+    }
+
+    event Minted(id: u64, owner: address);
+    event Transferred(id: u64, from: address, to: address);
+
+    public fn init() {
+        next_id = 0;
+    }
+
+    public fn mint(to: address) -> u64 {
+        auth(to);
+
+        let id = next_id;
+        owners.set(id, to);
+        next_id += 1;
+
+        emit Minted(id, to);
+        return id;
+    }
+
+    public fn transfer(from: address, to: address, id: u64) -> Result<bool, NftError> {
+        let owner = match owners.get(id) {
+            Some(value) => value,
+            None => throw NftError::NotFound,
+        };
+
+        if owner != from {
+            throw NftError::NotOwner;
+        }
+
+        auth(from);
+
+        owners.set(id, to);
+
+        emit Transferred(id, from, to);
+        return Ok(true);
+    }
+
+    public fn owner_of(id: u64) -> Option<address> {
+        return owners.get(id);
+    }
+}

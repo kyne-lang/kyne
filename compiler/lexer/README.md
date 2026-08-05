@@ -30,6 +30,13 @@ whitespace, spans) including malformed-input recovery, plus integration
 tests (`tests/canonical_examples.rs`) confirming all six canonical
 examples under `examples/canonical/` tokenize with zero `Error` tokens.
 
+`TokenKind::LBracket`/`RBracket` (`[`/`]`) were added while implementing
+`kyne_parser` (issue #7): the original implementation covered every
+punctuation form in `LANGUAGE_SPEC.md` §2's grammar table directly, but
+missed that list literals (§7.5) require square brackets, which have no
+dedicated grammar-table entry of their own since they're introduced
+inline in a code example rather than a named production.
+
 ## Future work
 
 Downstream crates (`kyne_cst`, `kyne_parser`) will consume this crate's

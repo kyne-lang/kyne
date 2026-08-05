@@ -42,3 +42,13 @@ directly; it does not redefine either document.
 | [ADR-0002](./ADR-0002-foundation-md-location.md) | FOUNDATION.md Location Correction | Accepted |
 | [ADR-0003](./ADR-0003-license-apache-2.0.md) | License Finalized as Apache License 2.0 | Accepted |
 | [ADR-0004](./ADR-0004-msrv-policy.md) | Minimum Supported Rust Version (MSRV) Policy | Accepted |
+| [ADR-0005](./ADR-0005-parser-implementation.md) | Parser Implementation Technique and Syntax-Error Code Range | Accepted |
+| [ADR-0006](./ADR-0006-formatter-implementation.md) | Formatter Implementation Strategy and Two Rule Interpretations | Accepted |
+| [ADR-0007](./ADR-0007-resolver-implementation.md) | Resolver Diagnostic Code Range and Two Scope Limitations | Accepted |
+| [ADR-0008](./ADR-0008-types-implementation.md) | Type Checker Diagnostic Codes and Block-Value Ambiguity Workaround | Accepted |
+| [ADR-0009](./ADR-0009-semantics-implementation.md) | Implicit Collection Defaults and Ordering-Diagnostic Baseline | Accepted |
+| [ADR-0010](./ADR-0010-hir-implementation.md) | HIR Nodes Carry No Inline Type Annotations | Accepted |
+| [ADR-0011](./ADR-0011-rir-implementation.md) | RIR's Soroban SDK Type and Storage-API Mapping | Accepted |
+| [ADR-0012](./ADR-0012-codegen-implementation.md) | Codegen's Print-Time Choices and Scope Boundary | Accepted |
+| [ADR-0013](./ADR-0013-driver-build-integration.md) | Driver's Cargo Build / Soroban Build Integration | Accepted |
+| [ADR-0014](./ADR-0014-fuzz-harness-implementation.md) | Fuzz-Harness Framework Choice | Accepted |

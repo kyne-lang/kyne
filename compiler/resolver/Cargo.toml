@@ -9,3 +9,6 @@ description = "See README.md in this directory."
 [dependencies]
 kyne_ast = { path = "../ast" }
 kyne_diagnostics = { path = "../diagnostics" }
+
+[dev-dependencies]
+kyne_cst = { path = "../cst" }

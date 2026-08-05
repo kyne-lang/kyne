@@ -12,3 +12,8 @@ path = "src/main.rs"
 
 [dependencies]
 kyne_driver = { path = "../driver" }
+kyne_formatter = { path = "../../tools/formatter" }
+kyne_diagnostics = { path = "../diagnostics" }
+
+[dev-dependencies]
+kyne_cst = { path = "../cst" }

@@ -10,3 +10,4 @@ description = "See README.md in this directory."
 kyne_lexer = { path = "../../compiler/lexer" }
 kyne_parser = { path = "../../compiler/parser" }
 kyne_cst = { path = "../../compiler/cst" }
+kyne_diagnostics = { path = "../../compiler/diagnostics" }

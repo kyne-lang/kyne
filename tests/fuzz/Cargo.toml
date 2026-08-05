@@ -1,0 +1,11 @@
+[package]
+name = "kyne_fuzz"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "See README.md in this directory."
+
+[dependencies]
+kyne_lexer = { path = "../../compiler/lexer" }
+kyne_parser = { path = "../../compiler/parser" }

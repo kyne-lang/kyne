@@ -1,0 +1,37 @@
+contract Oracle {
+    state admin: address;
+    state prices: map<symbol, i128>;
+
+    error OracleError {
+        Unauthorized,
+        NotFound,
+    }
+
+    event PriceUpdated(asset: symbol, price: i128);
+
+    public fn init(admin_addr: address) {
+        auth(admin_addr);
+        admin = admin_addr;
+    }
+
+    public fn set_price(caller: address, asset: symbol, price: i128) -> Result<bool, OracleError> {
+        auth(caller);
+
+        if caller != admin {
+            throw OracleError::Unauthorized;
+        }
+
+        prices.set(asset, price);
+
+        emit PriceUpdated(asset, price);
+        return Ok(true);
+    }
+
+    public fn get_price(asset: symbol) -> Result<i128, OracleError> {
+        let price = match prices.get(asset) {
+            Some(value) => value,
+            None => throw OracleError::NotFound,
+        };
+        return Ok(price);
+    }
+}

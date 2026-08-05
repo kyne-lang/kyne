@@ -12,7 +12,12 @@ contract Escrow {
 
     event Released(to: address, amount: i128);
 
-    public fn init(buyer_addr: address, seller_addr: address, arbiter_addr: address, deposit: i128) {
+    public fn init(
+        buyer_addr: address,
+        seller_addr: address,
+        arbiter_addr: address,
+        deposit: i128,
+    ) {
         auth(buyer_addr);
 
         buyer = buyer_addr;
