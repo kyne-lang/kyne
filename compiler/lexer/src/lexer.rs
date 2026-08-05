@@ -327,6 +327,8 @@ impl<'src> Lexer<'src> {
             '}' => TokenKind::RBrace,
             '(' => TokenKind::LParen,
             ')' => TokenKind::RParen,
+            '[' => TokenKind::LBracket,
+            ']' => TokenKind::RBracket,
             ';' => TokenKind::Semicolon,
             ',' => TokenKind::Comma,
             '.' => TokenKind::Dot,
@@ -629,7 +631,7 @@ mod tests {
 
     #[test]
     fn every_single_char_punctuation() {
-        let source = "{ } ( ) ; , . ? : ! < >";
+        let source = "{ } ( ) [ ] ; , . ? : ! < >";
         assert_eq!(
             kinds_no_trivia(source),
             vec![
@@ -637,6 +639,8 @@ mod tests {
                 TokenKind::RBrace,
                 TokenKind::LParen,
                 TokenKind::RParen,
+                TokenKind::LBracket,
+                TokenKind::RBracket,
                 TokenKind::Semicolon,
                 TokenKind::Comma,
                 TokenKind::Dot,

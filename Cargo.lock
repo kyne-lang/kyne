@@ -31,6 +31,7 @@ dependencies = [
 name = "kyne_cst"
 version = "0.1.0"
 dependencies = [
+ "kyne_diagnostics",
  "kyne_parser",
 ]
 
@@ -71,6 +72,15 @@ name = "kyne_formatter"
 version = "0.1.0"
 dependencies = [
  "kyne_cst",
+ "kyne_diagnostics",
+ "kyne_lexer",
+ "kyne_parser",
+]
+
+[[package]]
+name = "kyne_fuzz"
+version = "0.1.0"
+dependencies = [
  "kyne_lexer",
  "kyne_parser",
 ]

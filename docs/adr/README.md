@@ -42,3 +42,14 @@ directly; it does not redefine either document.
 | [ADR-0002](./ADR-0002-foundation-md-location.md) | FOUNDATION.md Location Correction | Accepted |
 | [ADR-0003](./ADR-0003-license-apache-2.0.md) | License Finalized as Apache License 2.0 | Accepted |
 | [ADR-0004](./ADR-0004-msrv-policy.md) | Minimum Supported Rust Version (MSRV) Policy | Accepted |
+| [ADR-0005](./ADR-0005-parser-implementation.md) | Parser Implementation Technique and Syntax-Error Code Range | Accepted |
+| [ADR-0006](./ADR-0006-formatter-implementation.md) | Formatter Implementation Strategy and Two Rule Interpretations | Accepted |
+| [ADR-0014](./ADR-0014-fuzz-harness-implementation.md) | Fuzz-Harness Framework Choice | Accepted |
+
+`ADR-0007` through `ADR-0013` are reserved by sibling, not-yet-merged
+issue branches (`kyne_resolver`, `kyne_types`, `kyne_semantics`, and so
+on) whose own work this branch does not depend on and so does not
+include — this is an accepted, expected consequence of this project's
+per-issue stacked-branch workflow, not a gap to fill in here. Each
+lands with its own PR; this index reflects only the ADRs this specific
+branch's history actually contains.

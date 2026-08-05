@@ -39,6 +39,9 @@ members = [
     "stdlib/time",
     "stdlib/debug",
     "stdlib/test",
+
+    # Cross-crate testing assets — see ARCHITECTURE.md §8.
+    "tests/fuzz",
 ]
 
 # No crate outside this workspace's `members` list is part of the Kyne build,

@@ -8,3 +8,4 @@ description = "See README.md in this directory."
 
 [dependencies]
 kyne_parser = { path = "../parser" }
+kyne_diagnostics = { path = "../diagnostics" }
