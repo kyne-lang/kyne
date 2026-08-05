@@ -94,6 +94,8 @@ pub enum TokenKind {
     RBrace,     // }
     LParen,     // (
     RParen,     // )
+    LBracket,   // [
+    RBracket,   // ]
     LAngle,     // < (also comparison `<`; disambiguated by the parser)
     RAngle,     // > (also comparison `>`; disambiguated by the parser)
     Semicolon,  // ;

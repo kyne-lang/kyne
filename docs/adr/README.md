@@ -42,3 +42,4 @@ directly; it does not redefine either document.
 | [ADR-0002](./ADR-0002-foundation-md-location.md) | FOUNDATION.md Location Correction | Accepted |
 | [ADR-0003](./ADR-0003-license-apache-2.0.md) | License Finalized as Apache License 2.0 | Accepted |
 | [ADR-0004](./ADR-0004-msrv-policy.md) | Minimum Supported Rust Version (MSRV) Policy | Accepted |
+| [ADR-0005](./ADR-0005-parser-implementation.md) | Parser Implementation Technique and Syntax-Error Code Range | Accepted |
