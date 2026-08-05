@@ -139,7 +139,11 @@ dependencies = [
 name = "kyne_rir"
 version = "0.1.0"
 dependencies = [
+ "kyne_ast",
+ "kyne_cst",
  "kyne_hir",
+ "kyne_resolver",
+ "kyne_types",
 ]
 
 [[package]]

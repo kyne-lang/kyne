@@ -47,3 +47,4 @@ directly; it does not redefine either document.
 | [ADR-0008](./ADR-0008-types-implementation.md) | Type Checker Diagnostic Codes and Block-Value Ambiguity Workaround | Accepted |
 | [ADR-0009](./ADR-0009-semantics-implementation.md) | Implicit Collection Defaults and Ordering-Diagnostic Baseline | Accepted |
 | [ADR-0010](./ADR-0010-hir-implementation.md) | HIR Nodes Carry No Inline Type Annotations | Accepted |
+| [ADR-0011](./ADR-0011-rir-implementation.md) | RIR's Soroban SDK Type and Storage-API Mapping | Accepted |
