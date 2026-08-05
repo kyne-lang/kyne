@@ -52,3 +52,4 @@ directly; it does not redefine either document.
 | [ADR-0012](./ADR-0012-codegen-implementation.md) | Codegen's Print-Time Choices and Scope Boundary | Accepted |
 | [ADR-0013](./ADR-0013-driver-build-integration.md) | Driver's Cargo Build / Soroban Build Integration | Accepted |
 | [ADR-0014](./ADR-0014-fuzz-harness-implementation.md) | Fuzz-Harness Framework Choice | Accepted |
+| [ADR-0015](./ADR-0015-golden-file-testing.md) | Golden-File / Snapshot-Testing Infrastructure | Accepted |

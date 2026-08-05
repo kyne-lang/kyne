@@ -29,6 +29,7 @@ version = "0.1.0"
 dependencies = [
  "kyne_ast",
  "kyne_cst",
+ "kyne_golden",
  "kyne_hir",
  "kyne_resolver",
  "kyne_rir",
@@ -94,6 +95,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "kyne_golden"
+version = "0.1.0"
+
+[[package]]
 name = "kyne_hir"
 version = "0.1.0"
 dependencies = [
@@ -107,6 +112,9 @@ dependencies = [
 [[package]]
 name = "kyne_lexer"
 version = "0.1.0"
+dependencies = [
+ "kyne_golden",
+]
 
 [[package]]
 name = "kyne_lsp"

@@ -1,0 +1,14 @@
+Let "let" @ 1:1
+Whitespace " " @ 1:4
+Identifier "x" @ 1:5
+Whitespace " " @ 1:6
+Eq "=" @ 1:7
+Whitespace " " @ 1:8
+IntLiteral "1" @ 1:9
+Whitespace " " @ 1:10
+Error "$" @ 1:11
+Whitespace " " @ 1:12
+IntLiteral "2" @ 1:13
+Semicolon ";" @ 1:14
+Whitespace "\n" @ 1:15
+Eof "" @ 2:1
