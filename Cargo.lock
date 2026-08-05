@@ -31,6 +31,7 @@ dependencies = [
 name = "kyne_cst"
 version = "0.1.0"
 dependencies = [
+ "kyne_diagnostics",
  "kyne_parser",
 ]
 
