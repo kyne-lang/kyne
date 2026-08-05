@@ -127,6 +127,7 @@ name = "kyne_resolver"
 version = "0.1.0"
 dependencies = [
  "kyne_ast",
+ "kyne_cst",
  "kyne_diagnostics",
 ]
 
