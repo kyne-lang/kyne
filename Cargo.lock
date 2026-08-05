@@ -78,6 +78,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "kyne_fuzz"
+version = "0.1.0"
+dependencies = [
+ "kyne_lexer",
+ "kyne_parser",
+]
+
+[[package]]
 name = "kyne_hir"
 version = "0.1.0"
 dependencies = [
