@@ -49,3 +49,4 @@ directly; it does not redefine either document.
 | [ADR-0010](./ADR-0010-hir-implementation.md) | HIR Nodes Carry No Inline Type Annotations | Accepted |
 | [ADR-0011](./ADR-0011-rir-implementation.md) | RIR's Soroban SDK Type and Storage-API Mapping | Accepted |
 | [ADR-0012](./ADR-0012-codegen-implementation.md) | Codegen's Print-Time Choices and Scope Boundary | Accepted |
+| [ADR-0013](./ADR-0013-driver-build-integration.md) | Driver's Cargo Build / Soroban Build Integration | Accepted |
