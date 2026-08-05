@@ -14,8 +14,23 @@ compiler crate depends on.
 
 None — a foundation crate, per [`ARCHITECTURE.md` §4](../../ARCHITECTURE.md#4-compiler-crates). Depended on by every stage crate.
 
+## Status
+
+Implemented. `Diagnostic` (`src/diagnostic.rs`) is a builder — `error`,
+`warning`, and `hint` construct one, each asserting its `code` matches the
+`KY`/`KS` namespace its severity requires; `.note(...)`,
+`.help(...)`/`.help_with_snippet(...)`, and `.doc_link(...)` attach the
+remaining required fields. `render` produces the terminal format shown
+throughout `COMPILER_ARCHITECTURE.md` §15.2.
+
+Note on landing order: this crate landed ahead of `kyne_ast` rather than
+immediately after it, since `kyne_parser`'s dependency on `kyne_diagnostics`
+(fixed at workspace-bootstrap time) makes it a hard prerequisite for the
+parser, not merely a nice-to-have — see the parser's own PR for the actual
+sequencing this ended up following.
+
 ## Future work
 
-Implementation begins early in Phase 1 — Milestone 2, immediately after
-`kyne_ast`, per [`ROADMAP.md` §7](../../docs/ROADMAP.md#7-compiler-bootstrap-order),
-since every later stage needs it to report errors.
+None — this crate's scope per `COMPILER_ARCHITECTURE.md` §15 is complete.
+Later stages will call into it, but this crate itself needs no further
+work to support them.
