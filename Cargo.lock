@@ -27,7 +27,12 @@ dependencies = [
 name = "kyne_codegen"
 version = "0.1.0"
 dependencies = [
+ "kyne_ast",
+ "kyne_cst",
+ "kyne_hir",
+ "kyne_resolver",
  "kyne_rir",
+ "kyne_types",
 ]
 
 [[package]]
@@ -92,7 +97,11 @@ dependencies = [
 name = "kyne_hir"
 version = "0.1.0"
 dependencies = [
+ "kyne_ast",
+ "kyne_cst",
+ "kyne_resolver",
  "kyne_semantics",
+ "kyne_types",
 ]
 
 [[package]]
@@ -139,6 +148,7 @@ name = "kyne_resolver"
 version = "0.1.0"
 dependencies = [
  "kyne_ast",
+ "kyne_cst",
  "kyne_diagnostics",
 ]
 
@@ -146,7 +156,11 @@ dependencies = [
 name = "kyne_rir"
 version = "0.1.0"
 dependencies = [
+ "kyne_ast",
+ "kyne_cst",
  "kyne_hir",
+ "kyne_resolver",
+ "kyne_types",
 ]
 
 [[package]]
@@ -161,7 +175,10 @@ dependencies = [
 name = "kyne_semantics"
 version = "0.1.0"
 dependencies = [
+ "kyne_ast",
+ "kyne_cst",
  "kyne_diagnostics",
+ "kyne_resolver",
  "kyne_types",
 ]
 
@@ -227,6 +244,8 @@ dependencies = [
 name = "kyne_types"
 version = "0.1.0"
 dependencies = [
+ "kyne_ast",
+ "kyne_cst",
  "kyne_diagnostics",
  "kyne_resolver",
 ]
