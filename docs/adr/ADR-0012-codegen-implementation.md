@@ -89,8 +89,33 @@ call syntax the way a `&self` method would. `src/print.rs` recognizes a
 call whose callee names a known contract function (from
 `RContract.functions`, threaded through `Ctx`) and prints `Self::name(env.clone(),
 <args>)`, prepending a clone of the caller's own `env` — `Env` is a
-cheap handle clone in the real SDK, and always cloning avoids needing
-move/borrow analysis this crate has no reason to implement.
+cheap handle clone in the real SDK.
+
+**Every non-`Copy` bound name is `.clone()`d at every read.**
+`soroban_sdk::Address` (and every other SDK collection/handle type) is
+`Clone` but not `Copy`. A parameter or `let` binding read more than
+once — `to` in `mint`, first passed to `balances.set(to, ...)` and
+later to `emit Mint(to, amount)` — moves on its first read under a
+naive print, leaving the second a real Rust "use of moved value"
+compile error. **This was not caught during issue #17 and was only
+found once issue #18 ran a real `cargo build` against the real
+`soroban-sdk`** — see Verification below. The fix (`print_fn`'s
+`bound_names`/`copy_names`, `collect_bindings`, `print_bound_name`)
+appends `.clone()` to every read of a name bound to a non-`Copy` type,
+including reads that turn out to be the value's last use. This is
+simpler than a real move/liveness analysis (which would clone only
+all-but-the-last read) and always correct: Kyne's value semantics
+([LANGUAGE_SPEC.md §4.0](../LANGUAGE_SPEC.md#40-memory-model-value-semantics-only))
+guarantee a binding's value is never mutated out from under a read, so
+cloning early versus cloning only when a later use exists cannot change
+observable behavior — the cost is an occasional redundant clone (`.clone()`
+on a value already about to be consumed anyway, or on a `let` binding
+whose type wasn't provable as `Copy` because it had no explicit
+annotation) rather than a real correctness gap. A future move/liveness
+pass to avoid the redundant clones is real Ownership Planner work
+belonging to `kyne_rir` per
+[MEMORY_MODEL.md §21](../MEMORY_MODEL.md#21-memory-planning-architecture),
+not this crate — noted as future work below.
 
 **`string`-typed `const`s print as `&'static str`, not
 `soroban_sdk::String`.** A `const` item has no `Env` available to
@@ -162,14 +187,50 @@ external-tool boundary `kyne build`'s later stages cross when invoking
   untested; fixing it generally requires threading expected-type context
   through `print_expr`, deferred until a canonical example exercises it.
 
+## Verification (added during issue #18)
+
+ADR-0011 and this ADR's original text both flagged the assumed Soroban
+SDK surface as "best-effort, not verified" because no crate before
+issue #18 could reach a real `cargo build`. Issue #18 got real (if
+limited) network access — `index.crates.io` is reachable and this
+machine's `~/.cargo/registry` already had `soroban-sdk 23.5.3` and its
+dependency closure cached — and confirmed, with a real `cargo build
+--target wasm32-unknown-unknown --release --offline` against the real
+crate:
+
+- Both Counter's and Token's generated Rust (this repo's own golden-file
+  fixtures) **compile successfully to a real, valid WASM binary** against
+  `soroban-sdk 23.5.3`.
+- This surfaced the real, non-`Copy`-clone bug documented above, fixed
+  in this same issue.
+- One pre-existing, non-blocking finding: `env.events().publish(...)`
+  compiles but emits `warning: use of deprecated method
+  soroban_sdk::events::Events::publish: use the #[contractevent] macro
+  on a contract event type`. Not fixed here — adopting `#[contractevent]`
+  needs a real generated Rust type per `event` declaration, a design
+  change out of this issue's scope (see the "`event` declarations do
+  not get a generated Rust type" scope note above) — tracked as future
+  work below.
+- `soroban-env-host` (needed only for native/test builds, not the real
+  `wasm32-unknown-unknown` contract build) pulls in a yanked `spin
+  0.9.8` and could not be resolved in this environment — irrelevant to
+  the actual contract build, which uses `soroban-env-guest` instead
+  (see `soroban-sdk`'s own `Cargo.toml`,
+  `[target.'cfg(target_family="wasm")'.dependencies.soroban-env-guest]`).
+
 ## Consequences
 
-- If the real `soroban-sdk` API differs from what this crate (or
-  ADR-0011) assumed once issue #18 can actually compile generated
-  output, the fix is a `src/print.rs` change here (mirroring
-  ADR-0011's own "single record of what was assumed" framing), not a
-  re-derivation from scratch.
-- The two scope gaps above (unqualified fieldless-variant patterns,
-  non-`const` `string`-typed expressions) are the concrete things a
-  future issue expanding RIR coverage beyond Counter/Token needs to
-  revisit first.
+- The Soroban SDK type/storage-API mapping (ADR-0011) and this ADR's
+  print-time choices are now verified against a real build for
+  Counter and Token specifically, not merely inspected — see
+  Verification above. Coverage beyond these two examples remains
+  unverified.
+- The two scope gaps noted above (unqualified fieldless-variant
+  patterns, non-`const` `string`-typed expressions) are the concrete
+  things a future issue expanding RIR coverage beyond Counter/Token
+  needs to revisit first.
+- Two further follow-ups surfaced by real verification, deferred as
+  future work: adopting `#[contractevent]` for `emit` (avoiding the
+  deprecation warning above), and a real move/liveness pass in
+  `kyne_rir` so a non-`Copy` value is cloned only when it is actually
+  read again, not at every read unconditionally.

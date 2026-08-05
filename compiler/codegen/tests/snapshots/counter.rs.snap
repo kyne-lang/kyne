@@ -14,7 +14,7 @@ impl Counter {
     }
 
     pub fn increment(env: Env, by: Address) -> i64 {
-        by.require_auth();
+        by.clone().require_auth();
         env.storage().persistent().set(
             &Symbol::new(&env, "count"),
             &((env
@@ -28,7 +28,7 @@ impl Counter {
         env.events().publish(
             (Symbol::new(&env, "Incremented"),),
             (
-                by,
+                by.clone(),
                 env.storage()
                     .persistent()
                     .get::<Symbol, i64>(&Symbol::new(&env, "count"))

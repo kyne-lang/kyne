@@ -20,25 +20,25 @@ pub enum TokenError {
 #[contractimpl]
 impl Token {
     pub fn init(env: Env, admin: Address) {
-        admin.require_auth();
+        admin.clone().require_auth();
         env.storage()
             .persistent()
             .set(&Symbol::new(&env, "total_supply"), &(0));
     }
 
     pub fn mint(env: Env, admin: Address, to: Address, amount: i128) -> Result<bool, TokenError> {
-        if (amount <= 0) {
+        if amount <= 0 {
             return Err(TokenError::InvalidAmount);
         }
-        admin.require_auth();
+        admin.clone().require_auth();
         let mut balances = env
             .storage()
             .persistent()
             .get::<Symbol, Map<Address, i128>>(&Symbol::new(&env, "balances"))
             .unwrap_or(Map::new(&env));
         balances.set(
-            to,
-            (Self::balance_of(env.clone(), to))
+            to.clone(),
+            (Self::balance_of(env.clone(), to.clone()))
                 .checked_add(amount)
                 .expect("arithmetic overflow"),
         );
@@ -56,7 +56,7 @@ impl Token {
             .expect("arithmetic overflow")),
         );
         env.events()
-            .publish((Symbol::new(&env, "Mint"),), (to, amount));
+            .publish((Symbol::new(&env, "Mint"),), (to.clone(), amount));
         return Ok(true);
     }
 
@@ -66,12 +66,12 @@ impl Token {
         to: Address,
         amount: i128,
     ) -> Result<bool, TokenError> {
-        if (amount <= 0) {
+        if amount <= 0 {
             return Err(TokenError::InvalidAmount);
         }
-        from.require_auth();
-        let from_balance = Self::balance_of(env.clone(), from);
-        if (from_balance < amount) {
+        from.clone().require_auth();
+        let from_balance = Self::balance_of(env.clone(), from.clone());
+        if from_balance.clone() < amount {
             return Err(TokenError::InsufficientBalance);
         }
         let mut balances = env
@@ -80,8 +80,8 @@ impl Token {
             .get::<Symbol, Map<Address, i128>>(&Symbol::new(&env, "balances"))
             .unwrap_or(Map::new(&env));
         balances.set(
-            from,
-            (from_balance)
+            from.clone(),
+            (from_balance.clone())
                 .checked_sub(amount)
                 .expect("arithmetic overflow"),
         );
@@ -94,16 +94,18 @@ impl Token {
             .get::<Symbol, Map<Address, i128>>(&Symbol::new(&env, "balances"))
             .unwrap_or(Map::new(&env));
         balances.set(
-            to,
-            (Self::balance_of(env.clone(), to))
+            to.clone(),
+            (Self::balance_of(env.clone(), to.clone()))
                 .checked_add(amount)
                 .expect("arithmetic overflow"),
         );
         env.storage()
             .persistent()
             .set(&Symbol::new(&env, "balances"), &balances);
-        env.events()
-            .publish((Symbol::new(&env, "Transfer"),), (from, to, amount));
+        env.events().publish(
+            (Symbol::new(&env, "Transfer"),),
+            (from.clone(), to.clone(), amount),
+        );
         return Ok(true);
     }
 
@@ -113,7 +115,7 @@ impl Token {
             .persistent()
             .get::<Symbol, Map<Address, i128>>(&Symbol::new(&env, "balances"))
             .unwrap_or(Map::new(&env))
-            .get(account)
+            .get(account.clone())
             .unwrap_or(0);
     }
 }

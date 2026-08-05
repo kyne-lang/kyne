@@ -108,3 +108,23 @@ fn arithmetic_is_checked_not_bare() {
     );
     assert!(generated.contains("checked_add"));
 }
+
+/// `soroban_sdk::Address` (and every other non-`Copy` SDK type) isn't
+/// `Copy`, so a parameter used more than once - `to` in `mint`, read
+/// once by `balances.set(to, ...)` and again by `emit Mint(to,
+/// amount)` - MUST be `.clone()`d at each read after the first, or the
+/// generated Rust fails to compile with "use of moved value". Verified
+/// against a real `cargo build --target wasm32-unknown-unknown` with
+/// the real `soroban-sdk` crate during issue #18's work - see
+/// docs/adr/ADR-0012-codegen-implementation.md.
+#[test]
+fn non_copy_parameter_reused_more_than_once_is_cloned() {
+    let generated = generate_source(
+        "token.kyn",
+        include_str!("../../../examples/canonical/token.kyn"),
+    );
+    assert!(
+        generated.contains("to.clone()"),
+        "expected `to` (reused in `mint`) to be cloned at its later reads, got:\n{generated}"
+    );
+}

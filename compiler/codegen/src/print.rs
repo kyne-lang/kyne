@@ -49,6 +49,16 @@ struct Ctx {
     /// implicit "same object" call syntax) from a constructor call
     /// (`Ok(true)`, `Some(x)`, a `struct`/tuple-variant literal).
     local_fns: HashSet<String>,
+    /// Every parameter/`let`-bound name in scope in the function
+    /// currently being printed (rebuilt fresh per function by
+    /// `print_fn`) - names in this set but not in `copy_names` get
+    /// `.clone()` appended at every read. See `print_expr`'s `Path`
+    /// branch and docs/adr/ADR-0012-codegen-implementation.md.
+    bound_names: HashSet<String>,
+    /// The subset of `bound_names` provably bound to one of Rust's
+    /// `Copy` numeric/`bool` primitives (from an explicit type
+    /// annotation) - read without `.clone()`.
+    copy_names: HashSet<String>,
 }
 
 /// Renders `rir` as a complete, `rustfmt`-formatted Rust source file body
@@ -60,14 +70,12 @@ pub fn generate(rir: &RProgram) -> Result<String, CodegenError> {
 }
 
 fn print_program(c: &RContract) -> String {
-    let ctx = Ctx {
-        state_types: c
-            .state_fields
-            .iter()
-            .map(|f| (f.name.clone(), f.ty.clone()))
-            .collect(),
-        local_fns: c.functions.iter().map(|f| f.name.clone()).collect(),
-    };
+    let state_types: HashMap<String, RType> = c
+        .state_fields
+        .iter()
+        .map(|f| (f.name.clone(), f.ty.clone()))
+        .collect();
+    let local_fns: HashSet<String> = c.functions.iter().map(|f| f.name.clone()).collect();
 
     let mut sdk_types: BTreeSet<&'static str> = BTreeSet::new();
     for f in &c.state_fields {
@@ -154,7 +162,7 @@ fn print_program(c: &RContract) -> String {
         if i > 0 {
             out.push('\n');
         }
-        out.push_str(&print_fn(f, &ctx));
+        out.push_str(&print_fn(f, &state_types, &local_fns));
         out.push('\n');
     }
     out.push_str("}\n");
@@ -431,11 +439,29 @@ fn print_storage_get(key: &str, default: Option<&RExpr>, ctx: &Ctx) -> String {
     }
 }
 
+/// A bound name needs `.clone()` at every read unless it is provably one
+/// of Rust's `Copy` numeric/`bool` primitives - see `Ctx::bound_names`/
+/// `copy_names` and docs/adr/ADR-0012-codegen-implementation.md. This
+/// always clones every read rather than only all-but-the-last (a real
+/// move/liveness analysis), which is simpler and always correct - Kyne's
+/// value semantics (LANGUAGE_SPEC.md §4.0) guarantee a binding's value
+/// never changes underneath a read, so cloning early vs. late is
+/// behaviorally identical - at the cost of occasional redundant clones
+/// a smarter pass could avoid.
+fn print_bound_name(name: &str, ctx: &Ctx) -> String {
+    if ctx.bound_names.contains(name) && !ctx.copy_names.contains(name) {
+        format!("{name}.clone()")
+    } else {
+        name.to_string()
+    }
+}
+
 fn print_expr(expr: &RExpr, ctx: &Ctx) -> String {
     match expr {
         RExpr::Literal(l) => print_literal(l),
-        RExpr::Var(name) => name.clone(),
+        RExpr::Var(name) => print_bound_name(name, ctx),
         RExpr::StorageGet { key, default } => print_storage_get(key, default.as_deref(), ctx),
+        RExpr::Path(Path::Ident(name)) => print_bound_name(name, ctx),
         RExpr::Path(p) => print_path(p),
         RExpr::Binary { left, op, right } => print_binary(left, *op, right, ctx),
         RExpr::Unary { op, operand } => print_unary(*op, operand, ctx),
@@ -522,7 +548,7 @@ fn print_stmt(stmt: &RStmt, ctx: &Ctx) -> String {
         ),
         RStmt::While { condition, body } => format!(
             "while {} {{\n{}\n}}",
-            print_expr(condition, ctx),
+            strip_redundant_outer_parens(&print_expr(condition, ctx)),
             print_block(body, ctx)
         ),
         RStmt::Expr(e) => format!("{};", print_expr(e, ctx)),
@@ -555,6 +581,37 @@ fn print_match_construct(m: &RMatch, ctx: &Ctx) -> String {
     format!("match {subject} {{\n{}\n}}", arms.join("\n"))
 }
 
+/// `print_binary`'s comparison/logical branch always wraps its result in
+/// an outer `(...)` so it composes safely as a sub-expression of another
+/// binary op (every nested `print_binary` call parenthesizes its own
+/// output the same way, so precedence is never ambiguous regardless of
+/// nesting depth) - but that outer pair is genuinely redundant, and
+/// rustc's `unused_parens` warns on it, when the expression is printed
+/// standing alone as an `if`/`while` condition. This strips exactly one
+/// matching, whole-string-spanning outer pair if present; any other
+/// shape (no parens, or a parenthesized sub-expression that doesn't
+/// span the whole string) is returned unchanged.
+fn strip_redundant_outer_parens(s: &str) -> &str {
+    let bytes = s.as_bytes();
+    if bytes.first() != Some(&b'(') || bytes.last() != Some(&b')') {
+        return s;
+    }
+    let mut depth = 0i32;
+    for (i, &b) in bytes.iter().enumerate() {
+        match b {
+            b'(' => depth += 1,
+            b')' => {
+                depth -= 1;
+                if depth == 0 && i != bytes.len() - 1 {
+                    return s;
+                }
+            }
+            _ => {}
+        }
+    }
+    &s[1..s.len() - 1]
+}
+
 fn try_print_as_if(m: &RMatch, ctx: &Ctx) -> Option<String> {
     let [then_arm, else_arm] = m.arms.as_slice() else {
         return None;
@@ -568,7 +625,7 @@ fn try_print_as_if(m: &RMatch, ctx: &Ctx) -> Option<String> {
     if !matches!(else_arm.pattern, Pattern::Wildcard) {
         return None;
     }
-    let cond = print_expr(&m.subject, ctx);
+    let cond = strip_redundant_outer_parens(&print_expr(&m.subject, ctx)).to_string();
     let then_body = print_arm_body(&then_arm.body, ctx);
     let else_is_empty =
         matches!(&else_arm.body, RMatchArmBody::Block(b) if b.statements.is_empty());
@@ -616,7 +673,9 @@ fn print_const(c: &RConst) -> String {
             &c.value,
             &Ctx {
                 state_types: HashMap::new(),
-                local_fns: HashSet::new()
+                local_fns: HashSet::new(),
+                bound_names: HashSet::new(),
+                copy_names: HashSet::new(),
             }
         )
     )
@@ -675,7 +734,56 @@ fn print_enum(e: &REnumDecl) -> String {
     )
 }
 
-fn print_fn(f: &RFnDecl, ctx: &Ctx) -> String {
+/// One of Rust's `Copy` numeric/`bool` primitives - read without
+/// `.clone()`. Every other `RType` (including a user `Named` type,
+/// which Counter/Token never construct as a local binding but which
+/// would need its own `#[derive(Copy)]` to be soundly read bare) is
+/// treated conservatively as non-`Copy`.
+fn is_copy_type(ty: &RType) -> bool {
+    matches!(
+        ty,
+        RType::Bool | RType::I32 | RType::I64 | RType::I128 | RType::U32 | RType::U64 | RType::U128
+    )
+}
+
+/// Walks every nested block reachable from `block` (`match` arms,
+/// `for`/`while` bodies) collecting every `let`/loop-variable binding
+/// name into `bound`, and the subset with an explicit, provably-`Copy`
+/// type annotation into `copy`. An untyped `let` (`kyne_hir` carries no
+/// inferred type, per ADR-0010) is conservatively treated as non-`Copy`,
+/// which is always sound (`.clone()` on a `Copy` value is itself valid,
+/// if redundant), never unsound.
+fn collect_bindings(block: &RBlock, bound: &mut HashSet<String>, copy: &mut HashSet<String>) {
+    for stmt in &block.statements {
+        match stmt {
+            RStmt::Let { name, ty, .. } => {
+                bound.insert(name.clone());
+                if ty.as_ref().is_some_and(is_copy_type) {
+                    copy.insert(name.clone());
+                }
+            }
+            RStmt::Match(m) => {
+                for arm in &m.arms {
+                    if let RMatchArmBody::Block(b) = &arm.body {
+                        collect_bindings(b, bound, copy);
+                    }
+                }
+            }
+            RStmt::For { var, body, .. } => {
+                bound.insert(var.clone());
+                collect_bindings(body, bound, copy);
+            }
+            RStmt::While { body, .. } => collect_bindings(body, bound, copy),
+            _ => {}
+        }
+    }
+}
+
+fn print_fn(
+    f: &RFnDecl,
+    state_types: &HashMap<String, RType>,
+    local_fns: &HashSet<String>,
+) -> String {
     let vis = match f.visibility {
         Visibility::Public => "pub ",
         Visibility::Internal => "pub(crate) ",
@@ -695,11 +803,33 @@ fn print_fn(f: &RFnDecl, ctx: &Ctx) -> String {
         Some(t) if !matches!(t, RType::Unit) => format!(" -> {}", print_type(t)),
         _ => String::new(),
     };
+
+    // `bound_names`/`copy_names` are rebuilt fresh per function - a
+    // parameter or `let` name's scope never crosses a function
+    // boundary. See `Ctx`'s own doc comments and
+    // docs/adr/ADR-0012-codegen-implementation.md.
+    let mut bound_names: HashSet<String> = HashSet::new();
+    let mut copy_names: HashSet<String> = HashSet::new();
+    for p in &f.params {
+        bound_names.insert(p.name.clone());
+        if is_copy_type(&p.ty) {
+            copy_names.insert(p.name.clone());
+        }
+    }
+    collect_bindings(&f.body, &mut bound_names, &mut copy_names);
+
+    let ctx = Ctx {
+        state_types: state_types.clone(),
+        local_fns: local_fns.clone(),
+        bound_names,
+        copy_names,
+    };
+
     format!(
         "{vis}fn {}({}){ret} {{\n{}\n}}",
         f.name,
         params.join(", "),
-        print_block(&f.body, ctx)
+        print_block(&f.body, &ctx)
     )
 }
 
