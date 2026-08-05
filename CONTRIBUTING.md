@@ -119,6 +119,19 @@ review is the right process for most of what you will work on.
 3. Add or update tests at the level appropriate to what you touched, per
    [`ARCHITECTURE.md` §16](./ARCHITECTURE.md#16-testing-philosophy). A
    change without a test is an incomplete change, not a smaller one.
+
+   If your change touches a golden-file fixture (any test using
+   [`kyne_golden`](./tests/golden/README.md) — see
+   [`COMPILER_ARCHITECTURE.md` §19](./docs/COMPILER_ARCHITECTURE.md#19-testing-strategy)
+   and [ADR-0015](./docs/adr/ADR-0015-golden-file-testing.md)) and the
+   output change is intentional, regenerate the fixture
+   (`UPDATE_GOLDEN=1 cargo test -p <crate>`) and commit the updated
+   fixture **in the same commit** as the change that caused it. This is
+   not optional tidiness: a golden-file diff sitting in the same commit
+   as its cause is what lets a reviewer see the exact output change
+   during code review, per `COMPILER_ARCHITECTURE.md` §19's own
+   reasoning — a fixture updated in a later, separate commit defeats
+   that.
 4. Update documentation in the same change — a crate's `README.md`, doc
    comments, or a constitutional document, as applicable. Documentation
    evolves with implementation; it is not a follow-up task.

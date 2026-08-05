@@ -2,10 +2,11 @@
 //! `rustfmt`-formatted Rust source text, per this crate's acceptance
 //! criteria (issue #17 scopes this crate to exactly these two canonical
 //! examples). Each generated file is compared against a checked-in
-//! golden-file fixture under `tests/snapshots/` - a diff here means
-//! either a real regression or an intentional codegen change, in which
-//! case the fixture must be reviewed and updated deliberately, never
-//! regenerated blindly.
+//! golden-file fixture under `tests/snapshots/`, via `kyne_golden`'s
+//! shared `assert_golden` (issue #20) - a diff here means either a real
+//! regression or an intentional codegen change; rerun with
+//! `UPDATE_GOLDEN=1` to regenerate the fixture, then review the diff
+//! and commit it deliberately, never blindly.
 
 fn generate_source(name: &str, source: &str) -> String {
     let (cst, diagnostics) = kyne_cst::Cst::parse(source, name);
@@ -37,13 +38,7 @@ fn counter_matches_golden_file() {
         "counter.kyn",
         include_str!("../../../examples/canonical/counter.kyn"),
     );
-    let golden = include_str!("snapshots/counter.rs.snap");
-    assert_eq!(
-        generated, golden,
-        "generated Rust for Counter no longer matches tests/snapshots/counter.rs.snap - \
-         if this is an intentional codegen change, review the new output and update the \
-         snapshot deliberately"
-    );
+    kyne_golden::assert_golden("tests/snapshots/counter.rs.snap", &generated);
 }
 
 #[test]
@@ -52,13 +47,7 @@ fn token_matches_golden_file() {
         "token.kyn",
         include_str!("../../../examples/canonical/token.kyn"),
     );
-    let golden = include_str!("snapshots/token.rs.snap");
-    assert_eq!(
-        generated, golden,
-        "generated Rust for Token no longer matches tests/snapshots/token.rs.snap - \
-         if this is an intentional codegen change, review the new output and update the \
-         snapshot deliberately"
-    );
+    kyne_golden::assert_golden("tests/snapshots/token.rs.snap", &generated);
 }
 
 /// Deterministic generation, per docs/COMPILER_ARCHITECTURE.md §14.4:

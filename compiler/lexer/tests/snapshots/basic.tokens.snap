@@ -1,0 +1,53 @@
+Contract "contract" @ 1:1
+Whitespace " " @ 1:9
+Identifier "Counter" @ 1:10
+Whitespace " " @ 1:17
+LBrace "{" @ 1:18
+Whitespace "\n    " @ 1:19
+State "state" @ 2:5
+Whitespace " " @ 2:10
+Identifier "count" @ 2:11
+Colon ":" @ 2:16
+Whitespace " " @ 2:17
+Identifier "i64" @ 2:18
+Whitespace " " @ 2:21
+Eq "=" @ 2:22
+Whitespace " " @ 2:23
+IntLiteral "0" @ 2:24
+Semicolon ";" @ 2:25
+Whitespace "\n\n    " @ 2:26
+Public "public" @ 4:5
+Whitespace " " @ 4:11
+Fn "fn" @ 4:12
+Whitespace " " @ 4:14
+Identifier "increment" @ 4:15
+LParen "(" @ 4:24
+Identifier "by" @ 4:25
+Colon ":" @ 4:27
+Whitespace " " @ 4:28
+Identifier "address" @ 4:29
+RParen ")" @ 4:36
+Whitespace " " @ 4:37
+Arrow "->" @ 4:38
+Whitespace " " @ 4:40
+Identifier "i64" @ 4:41
+Whitespace " " @ 4:44
+LBrace "{" @ 4:45
+Whitespace "\n        " @ 4:46
+Identifier "count" @ 5:9
+Whitespace " " @ 5:14
+PlusEq "+=" @ 5:15
+Whitespace " " @ 5:17
+IntLiteral "1" @ 5:18
+Semicolon ";" @ 5:19
+Whitespace "\n        " @ 5:20
+Return "return" @ 6:9
+Whitespace " " @ 6:15
+Identifier "count" @ 6:16
+Semicolon ";" @ 6:21
+Whitespace "\n    " @ 6:22
+RBrace "}" @ 7:5
+Whitespace "\n" @ 7:6
+RBrace "}" @ 8:1
+Whitespace "\n" @ 8:2
+Eof "" @ 9:1

@@ -42,6 +42,7 @@ members = [
 
     # Cross-crate testing assets — see ARCHITECTURE.md §8.
     "tests/fuzz",
+    "tests/golden",
 ]
 
 # No crate outside this workspace's `members` list is part of the Kyne build,

@@ -12,6 +12,7 @@ kyne_rir = { path = "../rir" }
 
 [dev-dependencies]
 kyne_cst = { path = "../cst" }
+kyne_golden = { path = "../../tests/golden" }
 kyne_hir = { path = "../hir" }
 kyne_resolver = { path = "../resolver" }
 kyne_types = { path = "../types" }

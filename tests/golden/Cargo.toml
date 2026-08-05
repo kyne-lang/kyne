@@ -1,5 +1,5 @@
 [package]
-name = "kyne_lexer"
+name = "kyne_golden"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -7,6 +7,3 @@ repository.workspace = true
 description = "See README.md in this directory."
 
 [dependencies]
-
-[dev-dependencies]
-kyne_golden = { path = "../../tests/golden" }
