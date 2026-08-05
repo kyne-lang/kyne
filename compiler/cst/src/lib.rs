@@ -12,7 +12,7 @@
 //! construct them, so it cannot be implemented in a crate `kyne_ast`
 //! depends on.
 
-pub use kyne_parser::{NodeKind, SyntaxElement, SyntaxNode, TokenKind};
+pub use kyne_parser::{NodeKind, SyntaxElement, SyntaxNode, Token, TokenKind};
 
 use kyne_diagnostics::Diagnostic;
 
