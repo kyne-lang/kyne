@@ -80,7 +80,11 @@ dependencies = [
 name = "kyne_hir"
 version = "0.1.0"
 dependencies = [
+ "kyne_ast",
+ "kyne_cst",
+ "kyne_resolver",
  "kyne_semantics",
+ "kyne_types",
 ]
 
 [[package]]
