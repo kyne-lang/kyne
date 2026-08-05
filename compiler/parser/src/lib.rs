@@ -8,7 +8,7 @@
 mod parser;
 mod tree;
 
-pub use kyne_lexer::TokenKind;
+pub use kyne_lexer::{Token, TokenKind};
 pub use parser::Parser;
 pub use tree::{NodeKind, SyntaxElement, SyntaxNode};
 
